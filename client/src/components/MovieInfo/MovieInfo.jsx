@@ -19,7 +19,7 @@ import {
   Remove,
   ArrowBack,
 } from "@mui/icons-material";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 
@@ -32,14 +32,17 @@ import {
 } from "../../services/TMDB";
 import { selectGenreOrCategory } from "../../features/currentGenreOrCategory";
 import genreIcons from "../../assets/genres";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function MovieInfo() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { id } = useParams();
 
-  const navigate = useNavigate();
+  // console.log(user?.username)
+
+  const { id } = useParams();
 
   const { data, error, isFetching } = useGetMovieQuery(id);
 
@@ -78,47 +81,87 @@ function MovieInfo() {
   }, [watchlistMovies, data]);
 
   const addToFavorites = async () => {
-    await axios.post(
-      `https://api.themoviedb.org/3/account/${
-        user.id
-      }/favorite?api_key=869b42f491d0a6bb59d90248e5b7bba8&session_id=${localStorage.getItem(
-        "session_id"
-      )}`,
-      {
-        media_type: "movie",
-        media_id: id,
-        favorite: !isMovieFavorited,
-      }
-    );
+    try {
+      await axios.post(
+        `https://api.themoviedb.org/3/account/${
+          user.id
+        }/favorite?api_key=869b42f491d0a6bb59d90248e5b7bba8&session_id=${localStorage.getItem(
+          "session_id"
+        )}`,
+        {
+          media_type: "movie",
+          media_id: id,
+          favorite: !isMovieFavorited,
+        }
+      );
 
-    setIsMovieFavorited((prev) => !prev);
+      setIsMovieFavorited((prev) => !prev);
+    } catch (err) {
+      toast.warn("Please login first!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
   };
 
   const addToWatchList = async () => {
-    await axios.post(
-      `https://api.themoviedb.org/3/account/${
-        user.id
-      }/watchlist?api_key=869b42f491d0a6bb59d90248e5b7bba8&session_id=${localStorage.getItem(
-        "session_id"
-      )}`,
-      {
-        media_type: "movie",
-        media_id: id,
-        watchlist: !isMovieWatchlisted,
-      }
-    );
+    try {
+      await axios.post(
+        `https://api.themoviedb.org/3/account/${
+          user.id
+        }/watchlist?api_key=869b42f491d0a6bb59d90248e5b7bba8&session_id=${localStorage.getItem(
+          "session_id"
+        )}`,
+        {
+          media_type: "movie",
+          media_id: id,
+          watchlist: !isMovieWatchlisted,
+        }
+      );
 
-    setIsMovieWatchlisted((prev) => !prev);
+      setIsMovieWatchlisted((prev) => !prev);
+    } catch (error) {
+      toast.warn("Please login first!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
   };
 
   const handleSubmit = async () => {
-    const response = await axios.get(
-      `http://localhost:5000/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`
-    );
+    if (typeof user.username === "undefined") {
+      toast.warn("Please login first!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        progress: undefined,
+        theme: "dark",
+      });
+    } else {
+      toast.info("Loading... Please wait...", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
 
-    window.location.href = response.data.url;
-    console.log(response.data);
-  }
+      const response = await axios.get(
+        `http://localhost:5000/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`
+      );
+
+      window.location.href = response.data.url;
+    }
+  };
 
   if (isFetching) {
     return (
@@ -179,6 +222,7 @@ function MovieInfo() {
                 src={genreIcons[genre.name.toLowerCase()]}
                 className={classes.genreImage}
                 height={30}
+                alt={genre.name}
               />
               <Typography color="textPrimary" variant="subtitle1">
                 {genre?.name}
@@ -230,14 +274,29 @@ function MovieInfo() {
           <div className={classes.buttonContainer}>
             <Grid item xs={12} sm={6} className={classes.buttonContainer}>
               <ButtonGroup size="small" variant="outlined">
-                <Button
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={data?.homepage}
-                  endIcon={<Language />}
-                >
-                  Website
-                </Button>
+                <div>
+                  <Button
+                    onClick={handleSubmit}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    endIcon={<Language />}
+                  >
+                    Watchparty
+                  </Button>
+                  <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                  />
+                </div>
+
                 <Button
                   target="_blank"
                   rel="noopener noreferrer"
@@ -257,20 +316,54 @@ function MovieInfo() {
             </Grid>
             <Grid item xs={12} sm={6} className={classes.buttonContainer}>
               <ButtonGroup size="small" variant="outlined">
-                <Button
-                  onClick={addToFavorites}
-                  endIcon={
-                    isMovieFavorited ? <FavoriteBorderOutlined /> : <Favorite />
-                  }
-                >
-                  {isMovieFavorited ? "Unfavorite" : "Favorite"}
-                </Button>
-                <Button
-                  onClick={addToWatchList}
-                  endIcon={isMovieWatchlisted ? <Remove /> : <PlusOne />}
-                >
-                  Watchlist
-                </Button>
+                <div>
+                  <Button
+                    onClick={addToFavorites}
+                    endIcon={
+                      isMovieFavorited ? (
+                        <FavoriteBorderOutlined />
+                      ) : (
+                        <Favorite />
+                      )
+                    }
+                  >
+                    {isMovieFavorited ? "Unfavorite" : "Favorite"}
+                  </Button>
+                  <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                  />
+                </div>
+
+                <div>
+                  <Button
+                    onClick={addToWatchList}
+                    endIcon={isMovieWatchlisted ? <Remove /> : <PlusOne />}
+                  >
+                    Watchlist
+                  </Button>
+                  <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                  />
+                </div>
+
                 <Button
                   endIcon={<ArrowBack />}
                   sx={{ borderColor: "primary.main" }}
@@ -289,11 +382,6 @@ function MovieInfo() {
             </Grid>
           </div>
         </Grid>
-
-        <form className={classes.watchPartyBtnContainer}>
-          <Button onClick={handleSubmit} className={classes.watchPartyBtn}>Watchparty</Button>
-        </form>
-
       </Grid>
       <Box marginTop="5rem" width="100%">
         <Typography variant="h3" gutterBottom align="center">

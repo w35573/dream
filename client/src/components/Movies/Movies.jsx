@@ -27,13 +27,13 @@ function Movies() {
         <Typography variant="h4">
           No movies that match that name.
           <br />
-          Please searh for something else.
+          Please search for something else.
         </Typography>
       </Box>
     );
   }
 
-  if (error) return 'An error has occured.';
+  if (error) return 'An error has occurred.';
 
   return (
     <div>
