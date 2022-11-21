@@ -158,7 +158,7 @@ function MovieInfo() {
       const response = await axios.get(
         `https://dream1-server.herokuapp.com/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`
       );
-
+      
       window.location.href = response.data.url;
     }
   };
