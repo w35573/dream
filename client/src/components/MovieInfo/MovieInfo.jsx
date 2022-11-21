@@ -156,7 +156,7 @@ function MovieInfo() {
       });
 
       const response = await axios.get(
-        `http://localhost:5000/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`
+        `https://dream-ott.netlify.app/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`
       );
 
       window.location.href = response.data.url;
