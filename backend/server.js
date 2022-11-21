@@ -1,9 +1,6 @@
 const express = require('express');
 var cors = require('cors');
 const app = express();
-
-app.use(cors());
-
 const server = require('http').createServer(app);
 const ioUtils = require('./utils/io');
 const fetchUrl = require('./utils/fetchUrl');
@@ -13,6 +10,8 @@ const addToFavorites = require('./movieData/addToFavorites');
 const checkPagination = require('./movieData/checkPagination');
 
 app.use(express.json());
+
+app.use(cors());
 
 const io = require('socket.io')(server, {
 	path: '/socket',
