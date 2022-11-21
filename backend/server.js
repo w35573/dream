@@ -1,6 +1,9 @@
 const express = require('express');
 var cors = require('cors');
 const app = express();
+
+app.use(cors());
+
 const server = require('http').createServer(app);
 const ioUtils = require('./utils/io');
 const fetchUrl = require('./utils/fetchUrl');
@@ -10,8 +13,6 @@ const addToFavorites = require('./movieData/addToFavorites');
 const checkPagination = require('./movieData/checkPagination');
 
 app.use(express.json());
-
-app.use(cors());
 
 const io = require('socket.io')(server, {
 	path: '/socket',
@@ -28,12 +29,6 @@ app.get('/test', (req, res, next) => {
 app.get('/watchparty/:username/:videoUrl', async (req, res) => {
 	const username = req.params.username;
 	const videoUrl = req.params.videoUrl;
-
-	res.header("Access-Control-Allow-Origin", "*")
-	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested, Content-Type, Accept Authorization"
-	)
 
 	try {
 		const url = await fetchUrl.fetchData(username, videoUrl);
