@@ -11,9 +11,7 @@ const checkPagination = require('./movieData/checkPagination');
 
 app.use(express.json());
 
-app.use(cors({
-	origin: 'http://localhost:3000',
-}));
+app.use(cors());
 
 const io = require('socket.io')(server, {
 	path: '/socket',
@@ -30,6 +28,12 @@ app.get('/test', (req, res, next) => {
 app.get('/watchparty/:username/:videoUrl', async (req, res) => {
 	const username = req.params.username;
 	const videoUrl = req.params.videoUrl;
+
+	res.header("Access-Control-Allow-Origin", "*")
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested, Content-Type, Accept Authorization"
+	)
 
 	try {
 		const url = await fetchUrl.fetchData(username, videoUrl);
