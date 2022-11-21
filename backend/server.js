@@ -12,7 +12,7 @@ const checkPagination = require('./movieData/checkPagination');
 app.use(express.json());
 
 app.use(cors({
-	origin: 'https://dream-ott.netlify.app'
+	origin: 'http://localhost:3000',
 }));
 
 const io = require('socket.io')(server, {
