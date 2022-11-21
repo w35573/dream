@@ -56,6 +56,10 @@
   "devDependencies": {
     "msw": "^0.48.2"
   },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0",
+    "react": ">=16.8.0"
+  },
   "msw": {
     "workerDirectory": "public"
   }
