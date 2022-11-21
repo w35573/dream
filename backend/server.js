@@ -11,7 +11,9 @@ const checkPagination = require('./movieData/checkPagination');
 
 app.use(express.json());
 
-app.use(cors());
+app.use(cors({
+	origin: 'https://dream-ott.netlify.app'
+}));
 
 const io = require('socket.io')(server, {
 	path: '/socket',
@@ -66,7 +68,7 @@ app.get('/movie/watchlist/:media_id/:watchlist', async (req, res) => {
 	try {
 		const data = await addToWatchList.watchList(media_id, watchlist);
 
-		if(data === 'unauthorized') {
+		if (data === 'unauthorized') {
 			res.status(401).json({ message: 'Unauthorized' });
 		} else {
 			res.status(200).json(data);

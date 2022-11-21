@@ -156,8 +156,14 @@ function MovieInfo() {
       });
 
       const response = await axios.get(
-        `https://dream-ott.netlify.app/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`
+        `https://dream-ott.netlify.app/watchparty/${user?.username}/${data?.videos?.results[0]?.key}`,
+        {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
+      
 
       window.location.href = response.data.url;
     }
