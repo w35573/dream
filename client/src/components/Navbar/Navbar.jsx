@@ -93,7 +93,7 @@ function Navbar() {
                 to={`/profile/${user.id}`}
                 className={classes.linkButton}
               >
-                {!isMobile && <>Movies &nbsp;</>}
+                {!isMobile && <>My Movies &nbsp;</>}
                 <Avatar
                   style={{ width: 30, height: 30 }}
                   alt="Profile"
