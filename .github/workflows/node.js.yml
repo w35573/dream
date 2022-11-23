@@ -16,8 +16,10 @@ jobs:
         with:
           node-version: '16'
       - name: Install necessary packages
+        working-directory: ./client
         run: npm install
       - name: Build the project
+        working-directory: ./client
         run: CI=false npm run build
       - name: Publish
         uses: netlify/actions/cli@master
