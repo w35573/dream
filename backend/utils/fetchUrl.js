@@ -12,7 +12,7 @@ async function fetchData(username, videoUrl) {
 
         await page.goto('https://redparty.netlify.app/');
         await page.type('#name1', username);
-        await page.type('#url', `https://www.youtube.com/watch?v=${videoUrl}`);
+        await page.type('#url', `https://www.youtube.com/watch?v=${null}`);
 
         await page.click('#root > div:nth-child(1) > div:nth-child(3) > div > div:nth-child(2) > form > div > div:nth-child(4) > button');
 
